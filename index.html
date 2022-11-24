@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="reset.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>Gerador de Senhas</title>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <h1 class="title">Gerador de senha</h1>
+        <p class="subtitle">
+          Utilize o nosso gerador online para criar uma senha forte e segura.
+        </p>
+      </section>
+
+      <section class="box">
+        <div class="password">
+          <div class="text">
+            <input type="text" name="password" id="password" />
+          </div>
+          <div class="actions">
+            <button id="copy-1">
+              <img src="/img/copy.svg" width="42" alt="" />
+            </button>
+            <button id="renew">
+              <img src="/img/renew.svg" width="42" alt="" />
+            </button>
+          </div>
+        </div>
+        <div class="security-indicator">
+          <div
+            id="security-indicator-bar"
+            class="bar"
+            
+          ></div>
+        </div>
+      </section>
+
+      <section class="box customize">
+        <h3 class="title">Personalizar</h3>
+        <div class="actions">
+          <div class="password-length">
+            <p>Tamanho: <span id="password-length-text">16</span></p>
+            <input
+              type="range"
+              name="password-length"
+              id="password-length"
+              class="slider"
+              value="16"
+              min="4"
+              max="64"
+            />
+          </div>
+          <div class="config">
+            <label class="checkbox-container">
+              <span class="text">Maiúsculas</span>
+              <input type="checkbox" id="uppercase-check" checked />
+              <span class="checkmark"></span>
+            </label>
+            <label class="checkbox-container">
+              <span class="text">Números</span>
+              <input type="checkbox" id="numbers-check" checked />
+              <span class="checkmark"></span>
+            </label>
+            <label class="checkbox-container">
+              <span class="text">Símbolos</span>
+              <input type="checkbox" id="symbol-check" checked />
+              <span class="checkmark"></span>
+            </label>
+          </div>
+        </div>
+      </section>
+      <div class="submit">
+        <button id="copy-2">Copiar senha</button>
+      </div>
+    </main>
+
+    <script>
+     
+
+      const inputEL = document.querySelector("#password");
+      const upperCaseCheckEL = document.querySelector("#uppercase-check")
+      const numberCheckEL = document.querySelector("#numbers-check")
+      const symbolCheckEL = document.querySelector("#symbol-check")
+      const securityIndicatorBarEL = document.querySelector('#security-indicator-bar')
+
+      let passwordLength = 16;
+
+      function generatePassword() {
+        let chars =
+          "abcdefghjkmnpqrstuvwxyz";
+
+        const upperCaseChars = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+        const numbersChars = "123456789";
+        const symbolChars = "?!@&*()[]";
+
+        if(upperCaseCheckEL.checked){
+          chars += upperCaseChars
+        }
+
+        if(numberCheckEL.checked){
+          chars += numbersChars
+        }
+
+        if(symbolCheckEL.checked){
+          chars += symbolChars
+        }
+        
+
+        let password = "";
+
+        for (let i = 0; i < passwordLength; i++) {
+          const randomNumber = Math.floor(Math.random() * chars.length);
+
+          password += chars.substring(randomNumber, randomNumber + 1);
+        }
+
+        inputEL.value = password;
+
+        calculateQuality()
+        calculateFontSize()
+      }
+
+      function calculateQuality (){
+
+        const percent = Math.round((passwordLength / 64) * 25 +
+        (upperCaseCheckEL.checked ? 15 : 0) + 
+        (numberCheckEL.checked ? 25 : 0) +
+        (symbolCheckEL.checked ? 35 : 0)
+        )
+
+        
+
+        securityIndicatorBarEL.style.width =`${percent}%`
+
+        if(percent > 69){
+          securityIndicatorBarEL.classList.remove('critical')
+          securityIndicatorBarEL.classList.remove('warning')
+          securityIndicatorBarEL.classList.add('safe')
+        }else if(percent > 50){
+          securityIndicatorBarEL.classList.remove('critical')
+          securityIndicatorBarEL.classList.add('warning')
+          securityIndicatorBarEL.classList.remove('safe')
+        }else {
+          securityIndicatorBarEL.classList.add('critical')
+          securityIndicatorBarEL.classList.remove('warning')
+          securityIndicatorBarEL.classList.remove('safe')
+        }
+
+        if(percent >= 100){
+          securityIndicatorBarEL.classList.add('completed')
+        }else{
+          securityIndicatorBarEL.classList.remove('completed')
+        }
+
+      }
+
+      function calculateFontSize(){
+        if(passwordLength > 45){
+          inputEL.classList.remove("font-sm")
+          inputEL.classList.remove("font-xs")
+          inputEL.classList.add("font-xxs")
+        }else if(passwordLength > 30){
+          inputEL.classList.remove("font-sm")
+          inputEL.classList.add("font-xs")
+          inputEL.classList.remove("font-xxs")
+        }else if (passwordLength > 22){
+          inputEL.classList.add("font-sm")
+          inputEL.classList.remove("font-xs")
+          inputEL.classList.remove("font-xxs")
+        }else {
+          inputEL.classList.remove("font-sm")
+          inputEL.classList.remove("font-xs")
+          inputEL.classList.remove("font-xxs")
+        }
+      }
+
+      function copy() {
+
+        navigator.clipboard.writeText(inputEL.value); // api de copiar do propio navegador
+      }
+
+      const passwordLengthEL = document.querySelector("#password-length");
+      passwordLengthEL.addEventListener("input", function () {
+        passwordLength = passwordLengthEL.value;
+        document.querySelector("#password-length-text").innerText = passwordLength
+        generatePassword();
+      });
+
+      upperCaseCheckEL.addEventListener("click", generatePassword);
+      numberCheckEL.addEventListener("click", generatePassword);
+      symbolCheckEL.addEventListener("click", generatePassword);
+
+      document.querySelector("#copy-1").addEventListener("click", copy);
+      document.querySelector("#copy-2").addEventListener("click", copy);
+      document.querySelector("#renew").addEventListener('click', generatePassword)
+
+      generatePassword();
+    </script>
+  </body>
+</html>
